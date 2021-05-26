@@ -1,0 +1,80 @@
+CREATE DATABASE LibraryDatabase
+
+USE LibraryDatabase
+/*
+DROP TABLE IF EXISTS Items;
+DROP TABLE IF EXISTS Members;
+DROP TABLE IF EXISTS Authors;
+DROP TABLE IF EXISTS Charges;
+DROP TABLE IF EXISTS AvailableBooks;
+DROP TABLE IF EXISTS CheckedOutBooks;
+DROP TABLE IF EXISTS BooksOnHold;
+DROP TABLE IF EXISTS LostBooks;
+*/
+
+-- Create Table Items
+
+CREATE TABLE ItemAccessibility (
+    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    Accessibility VARCHAR(50) PRIMARY KEY IDENTITY,
+)
+
+CREATE TABLE Charges (
+    ItemFormat VARCHAR(50) PRIMARY KEY NOT NULL,
+    OverDueCharge FLOAT NOT NULL,
+)
+
+CREATE TABLE Items (
+    ISBN INT PRIMARY KEY IDENTITY,
+    Label VARCHAR(50) NOT NULL UNIQUE,
+    Accessiblity VARCHAR(20) NOT NULL, --REFERENCES MemberItems(Accessibility)
+    ItemFormat VARCHAR(50) NOT NULL REFERENCES Charges(ItemFormat),  
+    Publisher VARCHAR(50),  
+    DatePublished DATETIME,
+    ItemEdition int,
+    ItemDescription VARCHAR(8000),
+    Cost FLOAT NOT NULL, 
+)
+
+CREATE TABLE Members (
+    MemberID INT PRIMARY KEY IDENTITY,
+    MemberName VARCHAR(50) NOT NULL,
+    Pin INT NOT NULL UNIQUE, CHECK (Pin<=999999),
+    Street VARCHAR(50) NOT NULL,
+    City VARCHAR(50) NOT NULL,
+    MemberState VARCHAR(50) NOT NULL,
+    Zip INT NOT NULL, CHECK (Zip<= 99999), CHECK(Zip>=1),
+    PhoneNumber INT, CHECK (PhoneNumber<= 9999999999), CHECK(PhoneNumber>=0),
+    DateRegistered DATETIME NOT NULL,
+    ExpirationDate DATETIME NOT NULL,
+    LastActivity DATETIME NOT NULL
+)
+
+CREATE TABLE Authors (
+    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    Authors VARCHAR(50) NOT NULL,
+)
+CREATE TABLE AvailableBooks (
+    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    Location VARCHAR(50) NOT NULL
+)
+
+CREATE TABLE CheckedOutBooks (
+    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    MemberID INT NOT NULL REFERENCES Members(MemberID),
+    DueDate DATETIME NOT NULL
+)
+
+CREATE TABLE BooksOnHold(
+    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    MemberID INT NOT NULL REFERENCES Members(MemberID),
+    DateRequested DATETIME NOT NULL,
+    DateExpires DATETIME NOT NULL,
+    HoldPosition INT--make constraint that makes each book
+)
+
+CREATE TABLE LostBooks(
+    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    MemberID INT NOT NULL REFERENCES Members(MemberID),
+)
+
