@@ -1,7 +1,7 @@
 CREATE DATABASE LibraryDatabase
 
 USE LibraryDatabase
-/*
+
 DROP TABLE IF EXISTS Items;
 DROP TABLE IF EXISTS Members;
 DROP TABLE IF EXISTS Authors;
@@ -10,14 +10,11 @@ DROP TABLE IF EXISTS AvailableBooks;
 DROP TABLE IF EXISTS CheckedOutBooks;
 DROP TABLE IF EXISTS BooksOnHold;
 DROP TABLE IF EXISTS LostBooks;
-*/
+
 
 -- Create Table Items
 
-CREATE TABLE ItemAccessibility (
-    ISBN INT NOT NULL REFERENCES Items(ISBN),
-    Accessibility VARCHAR(50) PRIMARY KEY IDENTITY,
-)
+
 
 CREATE TABLE Charges (
     ItemFormat VARCHAR(50) PRIMARY KEY NOT NULL,
@@ -34,6 +31,11 @@ CREATE TABLE Items (
     ItemEdition int,
     ItemDescription VARCHAR(8000),
     Cost FLOAT NOT NULL, 
+)
+
+CREATE TABLE ItemAccessibility (
+    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    Accessibility VARCHAR(50) NOT NULL,
 )
 
 CREATE TABLE Members (
@@ -77,4 +79,3 @@ CREATE TABLE LostBooks(
     ISBN INT NOT NULL REFERENCES Items(ISBN),
     MemberID INT NOT NULL REFERENCES Members(MemberID),
 )
-
