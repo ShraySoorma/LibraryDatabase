@@ -2,41 +2,52 @@ CREATE DATABASE LibraryDatabase
 
 USE LibraryDatabase
 
-DROP TABLE IF EXISTS Items;
+
 DROP TABLE IF EXISTS Members;
 DROP TABLE IF EXISTS Authors;
-DROP TABLE IF EXISTS Charges;
 DROP TABLE IF EXISTS AvailableBooks;
 DROP TABLE IF EXISTS CheckedOutBooks;
 DROP TABLE IF EXISTS BooksOnHold;
 DROP TABLE IF EXISTS LostBooks;
-
+DROP TABLE IF EXISTS Items;
+DROP TABLE IF EXISTS Charges;
 
 -- Create Table Items
-
-
 
 CREATE TABLE Charges (
     ItemFormat VARCHAR(50) PRIMARY KEY NOT NULL,
     OverDueCharge FLOAT NOT NULL,
 )
 
+INSERT INTO Charges VALUES ('Book', 0.30), ('CD', 0.20), ('DVD', 0.20), ('eBook', 0.10), ('Magazine', 0.30)
+
+
 CREATE TABLE Items (
-    ISBN INT PRIMARY KEY IDENTITY,
-    Label VARCHAR(50) NOT NULL UNIQUE,
+    ISBN BIGINT PRIMARY KEY NOT NULL,
+    Label VARCHAR(50) NOT NULL,
     Accessiblity VARCHAR(20) NOT NULL, --REFERENCES MemberItems(Accessibility)
     ItemFormat VARCHAR(50) NOT NULL REFERENCES Charges(ItemFormat),  
     Publisher VARCHAR(50),  
-    DatePublished DATETIME,
-    ItemEdition int,
+    DatePublished DATE,
+    ItemEdition INT,
     ItemDescription VARCHAR(8000),
     Cost FLOAT NOT NULL, 
 )
 
-CREATE TABLE ItemAccessibility (
-    ISBN INT NOT NULL REFERENCES Items(ISBN),
-    Accessibility VARCHAR(50) NOT NULL,
-)
+INSERT INTO Items
+VALUES 
+(3837492857286, 'Flower', 'Available', 'Book', 'Penguin', '5-2-2000', 1, 'Flowers are beautiful', 24.99),
+(5820585596948, 'Gold Pot','Checked Out', 'CD', 'Hermit', '3/24/2010', 1, 'Jerry the traveler finds a pot of gold and becomes rich', 29.99),
+(8949693059029, 'The Hunter', 'On Hold', 'DVD', 'Rhiner', '1/14/2001', 1, '?', 39.99),
+(2985729582402, 'Thumble Berry Tales', 'Lost', 'Book', 'Gardener', '4/7/1993', 1, '?', 14.99),
+(9782548976386, 'Grape Picker 3000', 'Available', 'CD', 'Plumber', '7/19/2006', 1, '?', 4.99),
+(9876556782453, 'The Middle Finger Project', 'Checked Out', 'Book', 'Two Dice', '5/2/2000', 1, '?', 7.50),
+(8294938294829, 'The Future of AI', 'On Hold', 'DVD', 'Rubiks', '5/2/2000', 1, 'Flowers are beautiful', 150.00),
+(1828472485939, 'The Future of AI', 'Lost', 'Book', 'Daniel Radcliffe', '5/2/2000', 1, 'Flowers are beautiful', 15.99),
+(4587088372538, 'SQL Server 101', 'Available', 'Book', 'Emma Watson', '5/2/2000', 1, 'Flowers are beautiful', 16.49),
+(7382048277592, 'Beauty and the Beast', 'Checked Out', 'Book', 'Ron Weasley', '5/2/2000', 1, 'Flowers are beautiful', 5.99)
+
+SELECT * From Items;
 
 CREATE TABLE Members (
     MemberID INT PRIMARY KEY IDENTITY,
@@ -46,36 +57,83 @@ CREATE TABLE Members (
     City VARCHAR(50) NOT NULL,
     MemberState VARCHAR(50) NOT NULL,
     Zip INT NOT NULL, CHECK (Zip<= 99999), CHECK(Zip>=1),
-    PhoneNumber INT, CHECK (PhoneNumber<= 9999999999), CHECK(PhoneNumber>=0),
-    DateRegistered DATETIME NOT NULL,
-    ExpirationDate DATETIME NOT NULL,
-    LastActivity DATETIME NOT NULL
+    PhoneNumber BIGINT, CHECK (PhoneNumber<= 9999999999), CHECK(PhoneNumber>=0),
+    DateRegistered DATE NOT NULL,
+    ExpirationDate DATE NOT NULL,
+    LastActivity DATE NOT NULL
 )
+
+SET IDENTITY_INSERT Members ON
+INSERT INTO Members(MemberID, MemberName, Pin, Street, City, MemberState, Zip, PhoneNumber, DateRegistered, ExpirationDate, LastActivity)
+VALUES 
+(1,'Shray Soorma', 1234, '123 Sesame Street', 'Hollywood', 'California', 90210, 4801234567, '5-27-2021','5-27-2034','5-27-2021'),
+(2,'Mehek Khandelwal', 9876, '124 Sesame Street', 'Hollywood', 'California', 90211, 6029771900, '5-12-2010','4-2-2023','5-25-2021'),
+(3,'Suhail Soorma', 5432, '125 Sesame Street', 'Hollywood', 'California', 90211, 4808040048, '5-12-2016','4-2-2029','1-1-2017'),
+(4,'Juhi Khandelwal', 6666, '126 Sesame Street', 'Hollywood', 'California', 90211, 480311313, '7-2-2013','4-2-2026','5-28-2021')
+
+SELECT * FROM Members;
+
 
 CREATE TABLE Authors (
-    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    ISBN BIGINT NOT NULL REFERENCES Items(ISBN),
     Authors VARCHAR(50) NOT NULL,
 )
+
+INSERT INTO Authors VALUES
+    (3837492857286, 'Amy Adams'),
+    (3837492857286, 'Big Bert'),
+    (3837492857286, 'Calm Cathy'),
+    (5820585596948, 'Rudyard Kipling'),
+    (8949693059029, 'Pool Boy'),
+    (2985729582402, 'Mehek Khandelwal'),
+    (9782548976386,'J. K. Rowling'),
+    (9876556782453, 'Amy Adams'),
+    (9876556782453, 'Ash Ambirge'),
+    (8294938294829, 'Raj Khandelwal'),
+    (1828472485939, 'Paris Sadhwani'),
+    (4587088372538, 'Prince Sadhwani'),
+    (7382048277592, 'Shiloh Soorma')
+
+
 CREATE TABLE AvailableBooks (
-    ISBN INT NOT NULL REFERENCES Items(ISBN),
-    Location VARCHAR(50) NOT NULL
+    ISBN BIGINT NOT NULL REFERENCES Items(ISBN),
+    LibraryBranch VARCHAR(50) NOT NULL
 )
+
+INSERT INTO AvailableBooks VALUES
+(3837492857286, 'Downtown'),
+(9782548976386, 'Downtown'),
+(4587088372538, 'Sunset') --where is a book's home? if it has a home, should be in the freaking table
 
 CREATE TABLE CheckedOutBooks (
-    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    ISBN BIGINT NOT NULL REFERENCES Items(ISBN),
     MemberID INT NOT NULL REFERENCES Members(MemberID),
-    DueDate DATETIME NOT NULL
+    DueDate DATE NOT NULL
 )
+
+INSERT INTO CheckedOutBooks VALUES 
+(5820585596948, 2, '3/24/2010'),
+(9876556782453, 3, '5/2/2000'),
+(7382048277592, 1,'5/2/2000')
+
+
 
 CREATE TABLE BooksOnHold(
-    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    ISBN BIGINT NOT NULL REFERENCES Items(ISBN),
     MemberID INT NOT NULL REFERENCES Members(MemberID),
-    DateRequested DATETIME NOT NULL,
-    DateExpires DATETIME NOT NULL,
+    DateRequested DATE NOT NULL,
+    DateExpires DATE NOT NULL,
     HoldPosition INT--make constraint that makes each book
 )
+INSERT INTO BooksOnHold VALUES
+(8949693059029, 1, '5-15-2021', '6-15-2021', 1),
+(8294938294829, 2, '4-15-2021', '6-15-2021', 3 )
 
 CREATE TABLE LostBooks(
-    ISBN INT NOT NULL REFERENCES Items(ISBN),
+    ISBN BIGINT NOT NULL REFERENCES Items(ISBN),
     MemberID INT NOT NULL REFERENCES Members(MemberID),
 )
+
+INSERT INTO LostBooks VALUES
+(2985729582402, 3),
+(1828472485939, 4)
