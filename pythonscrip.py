@@ -1,7 +1,9 @@
 #where we write transactions
 
 import pyodbc 
-conn = pyodbc.connect('Driver={SQL Server};'
+
+print ("import statement successful")
+conn = pyodbc.connect('Driver={ODBC Driver 17 for SQL Server};'
                       'Server=localhost;'
                       'Database=LibraryDatabase;'
                       'Trusted_Connection=yes;')
