@@ -1,5 +1,4 @@
 This is a list of all the software we installed in the terminal to run our program:
 1. homebrew
-2. python3
-3. pyodbc
-4. pip
+2. rails
+3. ruby
